@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nova Fortran</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Main dshboard</h1>
+      <p class="subtitle">v 1.0 test</p>
+    </header>
+
+    <div class="controls">
+      <div class="filter-group">
+        <label for="operation-filter">Операция:</label>
+        <select id="operation-filter">
+          <option value="all">Все операции</option>
+          <option value="multilinear">Multilinear</option>
+          <option value="univariate">Univariate</option>
+          <option value="eq_polynomial">Equality Polynomial</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label for="metric-filter">Метрика:</label>
+        <select id="metric-filter">
+          <option value="time">Время (мс)</option>
+          <option value="throughput">Throughput (ops/s)</option>
+          <option value="speedup">Speedup (x)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Rust Baseline</div>
+        <div class="stat-value" id="rust-avg">-</div>
+        <div class="stat-desc">Среднее время</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Fortran</div>
+        <div class="stat-value" id="fortran-avg">-</div>
+        <div class="stat-desc">Среднее время</div>
+      </div>
+      <div class="stat-card highlight">
+        <div class="stat-label">Speedup</div>
+        <div class="stat-value" id="speedup">-</div>
+        <div class="stat-desc">Ускорение</div>
+      </div>
+    </div>
+
+    <div class="chart-container">
+      <canvas id="performance-chart"></canvas>
+    </div>
+
+    <div class="table-container">
+      <table id="results-table">
+        <thead>
+          <tr>
+            <th>Операция</th>
+            <th>Размер</th>
+            <th>Rust (мс)</th>
+            <th>Fortran (мс)</th>
+            <th>Speedup</th>
+            <th>Статус</th>
+          </tr>
+        </thead>
+        <tbody id="results-body">
+          <!-- Данные загружаются через JavaScript -->
+        </tbody>
+      </table>
+    </div>
+
+    <footer>
+      <p>Данные загружаются из <code>benches/results/</code></p>
+      <p class="note"><code>cargo bench --bench polynomial-bench</code></p>
+    </footer>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
