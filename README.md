@@ -1,5 +1,14 @@
 # Nova: High-speed recursive arguments from folding schemes
 
+> **Note**: This is a fork of the original [Microsoft/Nova](https://github.com/microsoft/Nova) project, exploring experimental Fortran acceleration for polynomial computations.
+
+![main.jpe](main.jpe)
+
+And here we are, with this old language in our hands, as if trying to solve a riddle that has long been solved by others... but perhaps it is precisely in this antiquity, in this time-tested simplicity, that what we seek is hidden? Speed torments, tortures us, but is it not in suffering that truth is born? We probe, experiment, not knowing where this path will lead — but is this not the essence of all research... 
+Oh yeah, Dostoevsky came into fortran?
+---
+
+THIS REPO IS FORK OF:
 Nova is a high-speed recursive SNARK (a SNARK is type cryptographic proof system that enables a prover to prove a mathematical statement to a verifier with a short proof and succinct verification, and a recursive SNARK enables producing proofs that prove statements about prior proofs). 
 
 More precisely, Nova achieves [incrementally verifiable computation (IVC)](https://iacr.org/archive/tcc2008/49480001/49480001.pdf), a powerful cryptographic primitive that allows a prover to produce a proof of correct execution of a "long running" sequential computations in an incremental fashion. For example, IVC enables the following: The prover takes as input a proof $\pi_i$ proving the first $i$ steps of its computation and then update it to produce a proof $\pi_{i+1}$ proving the correct execution of the first $i + 1$ steps. Crucially, the prover's work to update the proof does not depend on the number of steps executed thus far, and the verifier's work to verify a proof does not grow with the number of steps in the computation. IVC schemes including Nova have a wide variety of applications such as Rollups, verifiable delay functions (VDFs), succinct blockchains, incrementally verifiable versions of [verifiable state machines](https://eprint.iacr.org/2020/758.pdf), and, more generally, proofs of (virtual) machine executions (e.g., EVM, RISC-V). 
