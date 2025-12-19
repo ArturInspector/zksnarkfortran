@@ -120,6 +120,7 @@ impl<Scalar: PrimeField> UniPoly<Scalar> {
     self.coeffs.resize(size, Scalar::ZERO);
   }
 
+  #[allow(missing_docs)]
   pub fn scale(&mut self, s: &Scalar) {
     self.coeffs.par_iter_mut().for_each(|c| *c *= *s);
   }

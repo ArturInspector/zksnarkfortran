@@ -15,6 +15,8 @@ pub(crate) mod math;
 pub(crate) mod polys;
 pub(crate) mod sumcheck;
 
+#[allow(missing_docs)]
+pub use polys::{eq::EqPolynomial, multilinear::MultilinearPolynomial, univariate::UniPoly};
 pub use sumcheck::SumcheckEngine;
 
 use crate::{

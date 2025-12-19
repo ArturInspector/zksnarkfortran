@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,24 +9,24 @@
 <body>
   <div class="container">
     <header>
-      <h1>Main dshboard</h1>
+      <h1>Main Dashboard</h1>
       <p class="subtitle">v 1.0 test</p>
     </header>
 
     <div class="controls">
       <div class="filter-group">
-        <label for="operation-filter">Операция:</label>
+        <label for="operation-filter">Operation:</label>
         <select id="operation-filter">
-          <option value="all">Все операции</option>
+          <option value="all">All operations</option>
           <option value="multilinear">Multilinear</option>
           <option value="univariate">Univariate</option>
           <option value="eq_polynomial">Equality Polynomial</option>
         </select>
       </div>
       <div class="filter-group">
-        <label for="metric-filter">Метрика:</label>
+        <label for="metric-filter">Metric:</label>
         <select id="metric-filter">
-          <option value="time">Время (мс)</option>
+          <option value="time">Time (ms)</option>
           <option value="throughput">Throughput (ops/s)</option>
           <option value="speedup">Speedup (x)</option>
         </select>
@@ -37,17 +37,17 @@
       <div class="stat-card">
         <div class="stat-label">Rust Baseline</div>
         <div class="stat-value" id="rust-avg">-</div>
-        <div class="stat-desc">Среднее время</div>
+        <div class="stat-desc">Average time</div>
       </div>
       <div class="stat-card">
         <div class="stat-label">Fortran</div>
         <div class="stat-value" id="fortran-avg">-</div>
-        <div class="stat-desc">Среднее время</div>
+        <div class="stat-desc">Average time</div>
       </div>
       <div class="stat-card highlight">
         <div class="stat-label">Speedup</div>
         <div class="stat-value" id="speedup">-</div>
-        <div class="stat-desc">Ускорение</div>
+        <div class="stat-desc">Speedup</div>
       </div>
     </div>
 
@@ -59,22 +59,22 @@
       <table id="results-table">
         <thead>
           <tr>
-            <th>Операция</th>
-            <th>Размер</th>
-            <th>Rust (мс)</th>
-            <th>Fortran (мс)</th>
+            <th>Operation</th>
+            <th>Size</th>
+            <th>Rust (ms)</th>
+            <th>Fortran (ms)</th>
             <th>Speedup</th>
-            <th>Статус</th>
+            <th>Status</th>
           </tr>
         </thead>
         <tbody id="results-body">
-          <!-- Данные загружаются через JavaScript -->
+          <!-- Data loaded via JavaScript -->
         </tbody>
       </table>
     </div>
 
     <footer>
-      <p>Данные загружаются из <code>benches/results/</code></p>
+      <p>Data loaded from <code>benches/results/</code></p>
       <p class="note"><code>cargo bench --bench polynomial-bench</code></p>
     </footer>
   </div>

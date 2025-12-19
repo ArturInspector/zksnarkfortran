@@ -9,6 +9,7 @@ use serde::{Deserialize, Serialize};
 
 // ax^2 + bx + c stored as vec![c, b, a]
 // ax^3 + bx^2 + cx + d stored as vec![d, c, b, a]
+#[allow(missing_docs)]
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub struct UniPoly<Scalar: PrimeField> {
   pub(crate) coeffs: Vec<Scalar>,
@@ -21,7 +22,13 @@ pub struct CompressedUniPoly<Scalar: PrimeField> {
   coeffs_except_linear_term: Vec<Scalar>,
 }
 
+#[allow(missing_docs)]
 impl<Scalar: PrimeField> UniPoly<Scalar> {
+  /// Creates a new `UniPoly` from coefficients.
+  pub fn new(coeffs: Vec<Scalar>) -> Self {
+    Self { coeffs }
+  }
+
   #[cfg(feature = "experimental")]
   pub fn from_evals(evals: &[Scalar]) -> Self {
     let n = evals.len();

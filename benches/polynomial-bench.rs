@@ -13,11 +13,9 @@ use criterion::{black_box, criterion_group, criterion_main, BenchmarkId, Criteri
 use ff::Field;
 use nova_snark::{
   provider::Bn256EngineKZG,
-  spartan::polys::{eq::EqPolynomial, multilinear::MultilinearPolynomial, univariate::UniPoly},
+  spartan::{EqPolynomial, MultilinearPolynomial, UniPoly},
   traits::Engine,
 };
-use rand::Rng;
-use rayon::prelude::*;
 
 type E = Bn256EngineKZG;
 type Scalar = <E as Engine>::Scalar;
@@ -35,10 +33,12 @@ criterion_main!(polynomial_ops);
 
 /// Generate random scalar values
 fn random_scalars(n: usize) -> Vec<Scalar> {
-  let mut rng = rand::thread_rng();
+  use rand::thread_rng;
   (0..n)
-    .into_par_iter()
-    .map(|_| Scalar::random(&mut rng))
+    .map(|_| {
+      let mut rng = thread_rng();
+      Scalar::random(&mut rng)
+    })
     .collect()
 }
 
@@ -54,39 +54,46 @@ fn bench_multilinear(c: &mut Criterion) {
   // Test sizes: 2^10, 2^12, 2^14, 2^16, 2^18, 2^20
   for num_vars in [10, 12, 14, 16, 18, 20] {
     let size = 1 << num_vars;
-    let Z = random_scalars(size);
-    let poly = MultilinearPolynomial::new(Z.clone());
+    let z = random_scalars(size);
+    let poly = MultilinearPolynomial::new(z.clone());
     let r = random_point(num_vars);
 
     // Benchmark: MultilinearPolynomial::evaluate()
+    let poly_clone = poly.clone();
+    let r_clone = r.clone();
     group.bench_with_input(
       BenchmarkId::new("evaluate", num_vars),
-      &(poly.clone(), r.clone()),
-      |b, (poly, r)| {
+      &(poly_clone, r_clone),
+      |b, input: &(MultilinearPolynomial<Scalar>, Vec<Scalar>)| {
+        let (poly, r) = input;
         b.iter(|| black_box(poly.evaluate(r)))
       },
     );
 
     // Benchmark: MultilinearPolynomial::bind_poly_var_top()
+    let poly_clone = poly.clone();
+    let r_bind = Scalar::random(&mut rand::thread_rng());
     group.bench_with_input(
       BenchmarkId::new("bind_poly_var_top", num_vars),
-      &mut poly.clone(),
-      |b, poly| {
-        let r = Scalar::random(&mut rand::thread_rng());
+      &poly_clone,
+      |b, poly: &MultilinearPolynomial<Scalar>| {
         b.iter(|| {
           let mut p = poly.clone();
-          p.bind_poly_var_top(&r);
+          p.bind_poly_var_top(&r_bind);
           black_box(p)
         })
       },
     );
 
     // Benchmark: MultilinearPolynomial::evaluate_with()
+    let z_clone = z.clone();
+    let r_clone2 = r.clone();
     group.bench_with_input(
       BenchmarkId::new("evaluate_with", num_vars),
-      &(Z.clone(), r.clone()),
-      |b, (Z, r)| {
-        b.iter(|| black_box(MultilinearPolynomial::evaluate_with(Z, r)))
+      &(z_clone, r_clone2),
+      |b, input: &(Vec<Scalar>, Vec<Scalar>)| {
+        let (z, r) = input;
+        b.iter(|| black_box(MultilinearPolynomial::evaluate_with(z, r)))
       },
     );
   }
@@ -101,23 +108,27 @@ fn bench_univariate(c: &mut Criterion) {
   // Test degrees: 10, 50, 100, 500, 1000, 5000
   for degree in [10, 50, 100, 500, 1000, 5000] {
     let coeffs = random_scalars(degree + 1);
-    let poly = UniPoly { coeffs };
+    let poly = UniPoly::new(coeffs);
     let r = Scalar::random(&mut rand::thread_rng());
 
     // Benchmark: UniPoly::evaluate()
+    let poly_clone = poly.clone();
+    let r_clone = r;
     group.bench_with_input(
       BenchmarkId::new("evaluate", degree),
-      &(poly.clone(), r),
-      |b, (poly, r)| {
+      &(poly_clone, r_clone),
+      |b, input: &(UniPoly<Scalar>, Scalar)| {
+        let (poly, r) = input;
         b.iter(|| black_box(poly.evaluate(r)))
       },
     );
 
     // Benchmark: UniPoly::eval_at_one() (uses parallel sum)
+    let poly_clone2 = poly.clone();
     group.bench_with_input(
       BenchmarkId::new("eval_at_one", degree),
-      &poly.clone(),
-      |b, poly| {
+      &poly_clone2,
+      |b, poly: &UniPoly<Scalar>| {
         b.iter(|| black_box(poly.eval_at_one()))
       },
     );
@@ -151,19 +162,23 @@ fn bench_eq_polynomial(c: &mut Criterion) {
     let poly = EqPolynomial::new(r.clone());
 
     // Benchmark: EqPolynomial::evals_from_points()
+    let r_clone = r.clone();
     group.bench_with_input(
       BenchmarkId::new("evals_from_points", num_vars),
-      &r.clone(),
-      |b, r| {
+      &r_clone,
+      |b, r: &Vec<Scalar>| {
         b.iter(|| black_box(EqPolynomial::evals_from_points(r)))
       },
     );
 
     // Benchmark: EqPolynomial::evaluate()
+    let poly_clone = poly.clone();
+    let rx_clone = rx.clone();
     group.bench_with_input(
       BenchmarkId::new("evaluate", num_vars),
-      &(poly.clone(), rx.clone()),
-      |b, (poly, rx)| {
+      &(poly_clone, rx_clone),
+      |b, input: &(EqPolynomial<Scalar>, Vec<Scalar>)| {
+        let (poly, rx) = input;
         b.iter(|| black_box(poly.evaluate(rx)))
       },
     );

@@ -25,12 +25,14 @@ use serde::{Deserialize, Serialize};
 /// $$
 ///
 /// Vector $Z$ indicates $Z(e)$ where $e$ ranges from $0$ to $2^m-1$.
+#[allow(missing_docs)]
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct MultilinearPolynomial<Scalar: PrimeField> {
   num_vars: usize,           // the number of variables in the multilinear polynomial
   pub(crate) Z: Vec<Scalar>, // evaluations of the polynomial in all the 2^num_vars Boolean inputs
 }
 
+#[allow(missing_docs)]
 impl<Scalar: PrimeField> MultilinearPolynomial<Scalar> {
   /// Creates a new `MultilinearPolynomial` from the given evaluations.
   ///
