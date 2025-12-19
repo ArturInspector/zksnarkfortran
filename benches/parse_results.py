@@ -45,14 +45,31 @@ def parse_criterion_results():
                 try:
                     with open(json_file) as f:
                         data = json.load(f)
-                    mean_ns = data.get("mean", {}).get("point_estimate", 0)
+                    
+                    # extract mean statistics
+                    mean_data = data.get("mean", {})
+                    mean_ns = mean_data.get("point_estimate", 0)
                     mean_ms = mean_ns / 1_000_000.0
+                    mean_ci = mean_data.get("confidence_interval", {})
+                    mean_std_err = mean_data.get("standard_error", 0) / 1_000_000.0
+                    
+                    # extract median for comparison
+                    median_data = data.get("median", {})
+                    median_ns = median_data.get("point_estimate", 0)
+                    median_ms = median_ns / 1_000_000.0
                     
                     results.append({
                         "operation": group_name,
                         "name": op_name,
                         "size": size,
-                        "rust": round(mean_ms, 2),
+                        "rust": {
+                            "mean_ms": round(mean_ms, 4),
+                            "median_ms": round(median_ms, 4),
+                            "std_error_ms": round(mean_std_err, 4),
+                            "ci_lower_ms": round(mean_ci.get("lower_bound", 0) / 1_000_000.0, 4),
+                            "ci_upper_ms": round(mean_ci.get("upper_bound", 0) / 1_000_000.0, 4),
+                            "confidence_level": mean_ci.get("confidence_level", 0.95)
+                        },
                         "fortran": None,
                         "unit": "ms"
                     })

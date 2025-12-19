@@ -24,12 +24,42 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function loadData() {
-  // TODO: Load from actual JSON files
-  // fetch('results/rust-baseline.json')
-  //   .then(res => res.json())
-  //   .then(data => { allData = data; renderTable(); renderChart(); });
-  
-  allData = mockData;
+  // Load from actual JSON files
+  fetch('../results/rust-baseline.json')
+    .then(res => res.json())
+    .then(data => { 
+      allData = data; 
+      renderTable(); 
+      renderChart(); 
+      updateStats();
+    })
+    .catch(err => {
+      console.warn('Failed to load rust-baseline.json, using mock data:', err);
+      allData = mockData;
+      renderTable();
+      renderChart();
+      updateStats();
+    });
+}
+
+// Helper: extract mean time from rust field (supports both old and new format)
+function getRustTime(item) {
+  if (typeof item.rust === 'number') {
+    return item.rust; // old format
+  } else if (item.rust && typeof item.rust === 'object') {
+    return item.rust.mean_ms; // new format
+  }
+  return 0;
+}
+
+// Helper: extract fortran time (supports both old and new format)
+function getFortranTime(item) {
+  if (typeof item.fortran === 'number') {
+    return item.fortran; // old format
+  } else if (item.fortran && typeof item.fortran === 'object') {
+    return item.fortran.mean_ms; // new format
+  }
+  return null;
 }
 
 function setupFilters() {
@@ -56,20 +86,27 @@ function renderTable() {
   const filtered = getFilteredData();
   
   tbody.innerHTML = filtered.map(item => {
-    const speedup = item.fortran ? (item.rust / item.fortran).toFixed(2) : '-';
-    const status = item.fortran 
-      ? (item.fortran < item.rust ? 'faster' : 'complete')
+    const rustTime = getRustTime(item);
+    const fortranTime = getFortranTime(item);
+    const speedup = fortranTime ? (rustTime / fortranTime).toFixed(2) : '-';
+    const status = fortranTime 
+      ? (fortranTime < rustTime ? 'faster' : 'complete')
       : 'pending';
-    const statusText = item.fortran 
-      ? (item.fortran < item.rust ? '⚡ Быстрее' : '✓ Готово')
+    const statusText = fortranTime 
+      ? (fortranTime < rustTime ? '⚡ Быстрее' : '✓ Готово')
       : '⏳ Ожидание';
+    
+    // Show confidence interval if available
+    const rustCI = item.rust && typeof item.rust === 'object' && item.rust.ci_lower_ms
+      ? ` [${item.rust.ci_lower_ms.toFixed(2)}, ${item.rust.ci_upper_ms.toFixed(2)}]`
+      : '';
     
     return `
       <tr>
         <td><strong>${item.operation}</strong>.${item.name}</td>
         <td>${item.size}</td>
-        <td>${item.rust.toFixed(2)}</td>
-        <td>${item.fortran ? item.fortran.toFixed(2) : '-'}</td>
+        <td>${rustTime.toFixed(2)}${rustCI}</td>
+        <td>${fortranTime ? fortranTime.toFixed(2) : '-'}</td>
         <td>${speedup !== '-' ? speedup + 'x' : '-'}</td>
         <td><span class="status-badge ${status}">${statusText}</span></td>
       </tr>
@@ -89,25 +126,29 @@ function renderChart() {
   if (metric === 'time') {
     datasets.push({
       label: 'Rust (мс)',
-      data: filtered.map(d => d.rust),
+      data: filtered.map(d => getRustTime(d)),
       backgroundColor: 'rgba(102, 126, 234, 0.6)',
       borderColor: 'rgba(102, 126, 234, 1)',
       borderWidth: 2
     });
     
-    if (filtered.some(d => d.fortran)) {
+    if (filtered.some(d => getFortranTime(d))) {
       datasets.push({
         label: 'Fortran (мс)',
-        data: filtered.map(d => d.fortran || null),
+        data: filtered.map(d => getFortranTime(d)),
         backgroundColor: 'rgba(245, 87, 108, 0.6)',
         borderColor: 'rgba(245, 87, 108, 1)',
         borderWidth: 2
       });
     }
-  } else if (metric === 'speedup' && filtered.some(d => d.fortran)) {
+  } else if (metric === 'speedup' && filtered.some(d => getFortranTime(d))) {
     datasets.push({
       label: 'Speedup (x)',
-      data: filtered.map(d => d.fortran ? (d.rust / d.fortran) : null),
+      data: filtered.map(d => {
+        const rust = getRustTime(d);
+        const fortran = getFortranTime(d);
+        return fortran ? (rust / fortran) : null;
+      }),
       backgroundColor: 'rgba(240, 147, 251, 0.6)',
       borderColor: 'rgba(240, 147, 251, 1)',
       borderWidth: 2
@@ -151,8 +192,8 @@ function renderChart() {
 
 function updateStats() {
   const filtered = getFilteredData();
-  const rustData = filtered.map(d => d.rust);
-  const fortranData = filtered.filter(d => d.fortran).map(d => d.fortran);
+  const rustData = filtered.map(d => getRustTime(d));
+  const fortranData = filtered.filter(d => getFortranTime(d)).map(d => getFortranTime(d));
   
   const rustAvg = rustData.length > 0 
     ? (rustData.reduce((a, b) => a + b, 0) / rustData.length).toFixed(2)
@@ -163,7 +204,7 @@ function updateStats() {
     : '-';
   
   const speedup = (rustAvg !== '-' && fortranAvg !== '-')
-    ? (rustAvg / fortranAvg).toFixed(2) + 'x'
+    ? (parseFloat(rustAvg) / parseFloat(fortranAvg)).toFixed(2) + 'x'
     : '-';
   
   document.getElementById('rust-avg').textContent = rustAvg !== '-' ? rustAvg + ' мс' : '-';

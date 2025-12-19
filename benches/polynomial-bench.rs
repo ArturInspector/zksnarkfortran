@@ -24,8 +24,8 @@ criterion_group! {
   name = polynomial_ops;
   config = Criterion::default()
     .warm_up_time(Duration::from_millis(3000))
-    .sample_size(10)
-    .measurement_time(Duration::from_secs(10));
+    .sample_size(200)  // increased for statistical confidence (was 10)
+    .measurement_time(Duration::from_secs(30));  // increased for better accuracy
   targets = bench_multilinear, bench_univariate, bench_eq_polynomial
 }
 
