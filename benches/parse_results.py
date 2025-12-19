@@ -4,68 +4,62 @@ from pathlib import Path
 
 def parse_criterion_results():
     """Parse Criterion JSON results and convert to dashboard format."""
-    criterion_dir = Path("target/criterion/polynomial_ops")
+    criterion_base = Path("target/criterion")
     results = []
     
-    if not criterion_dir.exists():
-        print(f"Error: {criterion_dir} does not exist. Run benchmarks first:")
+    if not criterion_base.exists():
+        print(f"Error: {criterion_base} does not exist. Run benchmarks first:")
         print("  cargo bench --bench polynomial-bench")
         return
     
-    # map -> result
-    for group_dir in criterion_dir.iterdir():
-        if not group_dir.is_dir():
+    # Groups are directly in target/criterion/ (multilinear, univariate, eq_polynomial)
+    for group_name in ["multilinear", "univariate", "eq_polynomial"]:
+        group_dir = criterion_base / group_name
+        if not group_dir.exists():
             continue
-            
-        group_name = group_dir.name  # okeey name
         
-        for bench_dir in group_dir.iterdir():
-            if not bench_dir.is_dir():
+        # Each benchmark operation has its own directory (evaluate, bind_poly_var_top, etc.)
+        for op_dir in group_dir.iterdir():
+            if not op_dir.is_dir():
                 continue
             
-            # benchmark
-            # Format: "name-size" or just "name"
-            bench_name = bench_dir.name
-            json_file = bench_dir / "new" / "benchmark.json"
-            if not json_file.exists():
-                continue
+            op_name = op_dir.name
             
-            try:
-                with open(json_file) as f:
-                    data = json.load(f)
-                mean_ns = data.get("mean", {}).get("point_estimate", 0)
-                mean_ms = mean_ns / 1_000_000.0
-                # size with split
-                parts = bench_name.split("-")
-                if len(parts) >= 2:
-                    try:
-                        size = int(parts[-1])
-                        name = "-".join(parts[:-1])
-                    except ValueError:
-                        # bench name if not number
-                        size = 0
-                        name = bench_name
-                else:
-                    size = 0
-                    name = bench_name
+            # Size directories (10, 12, 14, etc.) or direct benchmark.json
+            for size_dir in op_dir.iterdir():
+                if not size_dir.is_dir():
+                    continue
                 
-                # For multilinear, size is 2^num_vars, so we use num_vars as size
-                # For univariate, size is degree
-                # For eq_polynomial, size is num_vars
-                # ai is the best
+                # Try to parse size from directory name
+                try:
+                    size = int(size_dir.name)
+                except ValueError:
+                    # Not a size directory, skip
+                    continue
                 
-                results.append({
-                    "operation": group_name,
-                    "name": name,
-                    "size": size if size > 0 else bench_name,
-                    "rust": round(mean_ms, 2),
-                    "fortran": None,
-                    "unit": "ms"
-                })
+                # mean time
+                json_file = size_dir / "new" / "estimates.json"
+                if not json_file.exists():
+                    continue
                 
-            except Exception as e:
-                print(f"Warning: Failed to parse {json_file}: {e}")
-                continue
+                try:
+                    with open(json_file) as f:
+                        data = json.load(f)
+                    mean_ns = data.get("mean", {}).get("point_estimate", 0)
+                    mean_ms = mean_ns / 1_000_000.0
+                    
+                    results.append({
+                        "operation": group_name,
+                        "name": op_name,
+                        "size": size,
+                        "rust": round(mean_ms, 2),
+                        "fortran": None,
+                        "unit": "ms"
+                    })
+                    
+                except Exception as e:
+                    print(f"Warning: Failed to parse {json_file}: {e}")
+                    continue
     results_dir = Path("benches/results")
     results_dir.mkdir(parents=True, exist_ok=True)
     output_file = results_dir / "rust-baseline.json"
@@ -76,7 +70,7 @@ def parse_criterion_results():
     
 
 
-    
+
     for op in ["multilinear", "univariate", "eq_polynomial"]:
         op_results = [r for r in results if r["operation"] == op]
         if op_results:

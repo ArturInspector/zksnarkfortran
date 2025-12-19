@@ -1,0 +1,338 @@
+[
+  {
+    "operation": "multilinear",
+    "name": "evaluate_with",
+    "size": 20,
+    "rust": 35.91,
+    "fortran": null,
+    "unit": "ms"
+  },
+  {
+    "operation": "multilinear",
+    "name": "evaluate_with",
+    "size": 14,
+    "rust": 1.36,
+    "fortran": null,
+    "unit": "ms"
+  },
+  {
+    "operation": "multilinear",
+    "name": "evaluate_with",
+    "size": 10,
+    "rust": 0.37,
+    "fortran": null,
+    "unit": "ms"
+  },
+  {
+    "operation": "multilinear",
+    "name": "evaluate_with",
+    "size": 18,
+    "rust": 5.21,
+    "fortran": null,
+    "unit": "ms"
+  },
+  {
+    "operation": "multilinear",
+    "name": "evaluate_with",
+    "size": 12,
+    "rust": 0.7,
+    "fortran": null,
+    "unit": "ms"
+  },
+  {
+    "operation": "multilinear",
+    "name": "evaluate_with",
+    "size": 16,
+    "rust": 1.91,
+    "fortran": null,
+    "unit": "ms"
+  },
+  {
+    "operation": "multilinear",
+    "name": "evaluate",
+    "size": 20,
+    "rust": 37.53,
+    "fortran": null,
+    "unit": "ms"
+  },
+  {
+    "operation": "multilinear",
+    "name": "evaluate",
+    "size": 14,
+    "rust": 1.37,
+    "fortran": null,
+    "unit": "ms"
+  },
+  {
+    "operation": "multilinear",
+    "name": "evaluate",
+    "size": 10,
+    "rust": 0.37,
+    "fortran": null,
+    "unit": "ms"
+  },
+  {
+    "operation": "multilinear",
+    "name": "evaluate",
+    "size": 18,
+    "rust": 7.67,
+    "fortran": null,
+    "unit": "ms"
+  },
+  {
+    "operation": "multilinear",
+    "name": "evaluate",
+    "size": 12,
+    "rust": 0.69,
+    "fortran": null,
+    "unit": "ms"
+  },
+  {
+    "operation": "multilinear",
+    "name": "evaluate",
+    "size": 16,
+    "rust": 1.88,
+    "fortran": null,
+    "unit": "ms"
+  },
+  {
+    "operation": "multilinear",
+    "name": "bind_poly_var_top",
+    "size": 20,
+    "rust": 26.93,
+    "fortran": null,
+    "unit": "ms"
+  },
+  {
+    "operation": "multilinear",
+    "name": "bind_poly_var_top",
+    "size": 14,
+    "rust": 0.32,
+    "fortran": null,
+    "unit": "ms"
+  },
+  {
+    "operation": "multilinear",
+    "name": "bind_poly_var_top",
+    "size": 10,
+    "rust": 0.06,
+    "fortran": null,
+    "unit": "ms"
+  },
+  {
+    "operation": "multilinear",
+    "name": "bind_poly_var_top",
+    "size": 18,
+    "rust": 1.94,
+    "fortran": null,
+    "unit": "ms"
+  },
+  {
+    "operation": "multilinear",
+    "name": "bind_poly_var_top",
+    "size": 12,
+    "rust": 0.14,
+    "fortran": null,
+    "unit": "ms"
+  },
+  {
+    "operation": "multilinear",
+    "name": "bind_poly_var_top",
+    "size": 16,
+    "rust": 0.59,
+    "fortran": null,
+    "unit": "ms"
+  },
+  {
+    "operation": "univariate",
+    "name": "evaluate",
+    "size": 1000,
+    "rust": 0.04,
+    "fortran": null,
+    "unit": "ms"
+  },
+  {
+    "operation": "univariate",
+    "name": "evaluate",
+    "size": 10,
+    "rust": 0.0,
+    "fortran": null,
+    "unit": "ms"
+  },
+  {
+    "operation": "univariate",
+    "name": "evaluate",
+    "size": 5000,
+    "rust": 0.18,
+    "fortran": null,
+    "unit": "ms"
+  },
+  {
+    "operation": "univariate",
+    "name": "evaluate",
+    "size": 500,
+    "rust": 0.02,
+    "fortran": null,
+    "unit": "ms"
+  },
+  {
+    "operation": "univariate",
+    "name": "evaluate",
+    "size": 50,
+    "rust": 0.0,
+    "fortran": null,
+    "unit": "ms"
+  },
+  {
+    "operation": "univariate",
+    "name": "evaluate",
+    "size": 100,
+    "rust": 0.0,
+    "fortran": null,
+    "unit": "ms"
+  },
+  {
+    "operation": "univariate",
+    "name": "eval_at_one",
+    "size": 1000,
+    "rust": 0.05,
+    "fortran": null,
+    "unit": "ms"
+  },
+  {
+    "operation": "univariate",
+    "name": "eval_at_one",
+    "size": 10,
+    "rust": 0.02,
+    "fortran": null,
+    "unit": "ms"
+  },
+  {
+    "operation": "univariate",
+    "name": "eval_at_one",
+    "size": 5000,
+    "rust": 0.07,
+    "fortran": null,
+    "unit": "ms"
+  },
+  {
+    "operation": "univariate",
+    "name": "eval_at_one",
+    "size": 500,
+    "rust": 0.04,
+    "fortran": null,
+    "unit": "ms"
+  },
+  {
+    "operation": "univariate",
+    "name": "eval_at_one",
+    "size": 50,
+    "rust": 0.03,
+    "fortran": null,
+    "unit": "ms"
+  },
+  {
+    "operation": "univariate",
+    "name": "eval_at_one",
+    "size": 100,
+    "rust": 0.03,
+    "fortran": null,
+    "unit": "ms"
+  },
+  {
+    "operation": "eq_polynomial",
+    "name": "evaluate",
+    "size": 20,
+    "rust": 0.0,
+    "fortran": null,
+    "unit": "ms"
+  },
+  {
+    "operation": "eq_polynomial",
+    "name": "evaluate",
+    "size": 14,
+    "rust": 0.0,
+    "fortran": null,
+    "unit": "ms"
+  },
+  {
+    "operation": "eq_polynomial",
+    "name": "evaluate",
+    "size": 10,
+    "rust": 0.0,
+    "fortran": null,
+    "unit": "ms"
+  },
+  {
+    "operation": "eq_polynomial",
+    "name": "evaluate",
+    "size": 18,
+    "rust": 0.0,
+    "fortran": null,
+    "unit": "ms"
+  },
+  {
+    "operation": "eq_polynomial",
+    "name": "evaluate",
+    "size": 12,
+    "rust": 0.0,
+    "fortran": null,
+    "unit": "ms"
+  },
+  {
+    "operation": "eq_polynomial",
+    "name": "evaluate",
+    "size": 16,
+    "rust": 0.0,
+    "fortran": null,
+    "unit": "ms"
+  },
+  {
+    "operation": "eq_polynomial",
+    "name": "evals_from_points",
+    "size": 20,
+    "rust": 30.29,
+    "fortran": null,
+    "unit": "ms"
+  },
+  {
+    "operation": "eq_polynomial",
+    "name": "evals_from_points",
+    "size": 14,
+    "rust": 0.66,
+    "fortran": null,
+    "unit": "ms"
+  },
+  {
+    "operation": "eq_polynomial",
+    "name": "evals_from_points",
+    "size": 10,
+    "rust": 0.24,
+    "fortran": null,
+    "unit": "ms"
+  },
+  {
+    "operation": "eq_polynomial",
+    "name": "evals_from_points",
+    "size": 18,
+    "rust": 3.46,
+    "fortran": null,
+    "unit": "ms"
+  },
+  {
+    "operation": "eq_polynomial",
+    "name": "evals_from_points",
+    "size": 12,
+    "rust": 0.39,
+    "fortran": null,
+    "unit": "ms"
+  },
+  {
+    "operation": "eq_polynomial",
+    "name": "evals_from_points",
+    "size": 16,
+    "rust": 1.16,
+    "fortran": null,
+    "unit": "ms"
+  }
+]
