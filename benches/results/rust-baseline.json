@@ -3,7 +3,14 @@
     "operation": "multilinear",
     "name": "evaluate_with",
     "size": 20,
-    "rust": 35.91,
+    "rust": {
+      "mean_ms": 35.9067,
+      "median_ms": 35.4439,
+      "std_error_ms": 0.3605,
+      "ci_lower_ms": 35.3608,
+      "ci_upper_ms": 36.704,
+      "confidence_level": 0.95
+    },
     "fortran": null,
     "unit": "ms"
   },
@@ -11,7 +18,14 @@
     "operation": "multilinear",
     "name": "evaluate_with",
     "size": 14,
-    "rust": 1.36,
+    "rust": {
+      "mean_ms": 1.5054,
+      "median_ms": 1.4918,
+      "std_error_ms": 0.0124,
+      "ci_lower_ms": 1.4831,
+      "ci_upper_ms": 1.5316,
+      "confidence_level": 0.95
+    },
     "fortran": null,
     "unit": "ms"
   },
@@ -19,7 +33,14 @@
     "operation": "multilinear",
     "name": "evaluate_with",
     "size": 10,
-    "rust": 0.37,
+    "rust": {
+      "mean_ms": 0.4265,
+      "median_ms": 0.4174,
+      "std_error_ms": 0.0043,
+      "ci_lower_ms": 0.4188,
+      "ci_upper_ms": 0.4356,
+      "confidence_level": 0.95
+    },
     "fortran": null,
     "unit": "ms"
   },
@@ -27,7 +48,14 @@
     "operation": "multilinear",
     "name": "evaluate_with",
     "size": 18,
-    "rust": 5.21,
+    "rust": {
+      "mean_ms": 5.2096,
+      "median_ms": 5.0644,
+      "std_error_ms": 0.1646,
+      "ci_lower_ms": 4.8977,
+      "ci_upper_ms": 5.5383,
+      "confidence_level": 0.95
+    },
     "fortran": null,
     "unit": "ms"
   },
@@ -35,7 +63,14 @@
     "operation": "multilinear",
     "name": "evaluate_with",
     "size": 12,
-    "rust": 0.7,
+    "rust": {
+      "mean_ms": 0.7306,
+      "median_ms": 0.7301,
+      "std_error_ms": 0.0036,
+      "ci_lower_ms": 0.7237,
+      "ci_upper_ms": 0.7377,
+      "confidence_level": 0.95
+    },
     "fortran": null,
     "unit": "ms"
   },
@@ -43,7 +78,14 @@
     "operation": "multilinear",
     "name": "evaluate_with",
     "size": 16,
-    "rust": 1.91,
+    "rust": {
+      "mean_ms": 3.2496,
+      "median_ms": 3.0025,
+      "std_error_ms": 0.0475,
+      "ci_lower_ms": 3.1612,
+      "ci_upper_ms": 3.3468,
+      "confidence_level": 0.95
+    },
     "fortran": null,
     "unit": "ms"
   },
@@ -51,7 +93,14 @@
     "operation": "multilinear",
     "name": "evaluate",
     "size": 20,
-    "rust": 37.53,
+    "rust": {
+      "mean_ms": 37.5317,
+      "median_ms": 37.5817,
+      "std_error_ms": 0.6222,
+      "ci_lower_ms": 36.2912,
+      "ci_upper_ms": 38.7176,
+      "confidence_level": 0.95
+    },
     "fortran": null,
     "unit": "ms"
   },
@@ -59,7 +108,14 @@
     "operation": "multilinear",
     "name": "evaluate",
     "size": 14,
-    "rust": 1.37,
+    "rust": {
+      "mean_ms": 1.6638,
+      "median_ms": 1.5447,
+      "std_error_ms": 0.0268,
+      "ci_lower_ms": 1.6134,
+      "ci_upper_ms": 1.7185,
+      "confidence_level": 0.95
+    },
     "fortran": null,
     "unit": "ms"
   },
@@ -67,7 +123,14 @@
     "operation": "multilinear",
     "name": "evaluate",
     "size": 10,
-    "rust": 0.37,
+    "rust": {
+      "mean_ms": 0.44,
+      "median_ms": 0.4291,
+      "std_error_ms": 0.004,
+      "ci_lower_ms": 0.4323,
+      "ci_upper_ms": 0.4481,
+      "confidence_level": 0.95
+    },
     "fortran": null,
     "unit": "ms"
   },
@@ -75,7 +138,14 @@
     "operation": "multilinear",
     "name": "evaluate",
     "size": 18,
-    "rust": 7.67,
+    "rust": {
+      "mean_ms": 6.8054,
+      "median_ms": 6.3295,
+      "std_error_ms": 0.0794,
+      "ci_lower_ms": 6.6546,
+      "ci_upper_ms": 6.966,
+      "confidence_level": 0.95
+    },
     "fortran": null,
     "unit": "ms"
   },
@@ -83,7 +153,14 @@
     "operation": "multilinear",
     "name": "evaluate",
     "size": 12,
-    "rust": 0.69,
+    "rust": {
+      "mean_ms": 0.7318,
+      "median_ms": 0.7357,
+      "std_error_ms": 0.0039,
+      "ci_lower_ms": 0.7241,
+      "ci_upper_ms": 0.7395,
+      "confidence_level": 0.95
+    },
     "fortran": null,
     "unit": "ms"
   },
@@ -91,7 +168,14 @@
     "operation": "multilinear",
     "name": "evaluate",
     "size": 16,
-    "rust": 1.88,
+    "rust": {
+      "mean_ms": 2.9357,
+      "median_ms": 2.9225,
+      "std_error_ms": 0.0146,
+      "ci_lower_ms": 2.908,
+      "ci_upper_ms": 2.9652,
+      "confidence_level": 0.95
+    },
     "fortran": null,
     "unit": "ms"
   },
@@ -99,7 +183,14 @@
     "operation": "multilinear",
     "name": "bind_poly_var_top",
     "size": 20,
-    "rust": 26.93,
+    "rust": {
+      "mean_ms": 26.9348,
+      "median_ms": 26.2488,
+      "std_error_ms": 0.6742,
+      "ci_lower_ms": 25.8992,
+      "ci_upper_ms": 28.4271,
+      "confidence_level": 0.95
+    },
     "fortran": null,
     "unit": "ms"
   },
@@ -107,7 +198,14 @@
     "operation": "multilinear",
     "name": "bind_poly_var_top",
     "size": 14,
-    "rust": 0.32,
+    "rust": {
+      "mean_ms": 0.3493,
+      "median_ms": 0.3472,
+      "std_error_ms": 0.0021,
+      "ci_lower_ms": 0.3454,
+      "ci_upper_ms": 0.3535,
+      "confidence_level": 0.95
+    },
     "fortran": null,
     "unit": "ms"
   },
@@ -115,7 +213,14 @@
     "operation": "multilinear",
     "name": "bind_poly_var_top",
     "size": 10,
-    "rust": 0.06,
+    "rust": {
+      "mean_ms": 0.083,
+      "median_ms": 0.0804,
+      "std_error_ms": 0.0011,
+      "ci_lower_ms": 0.0809,
+      "ci_upper_ms": 0.0852,
+      "confidence_level": 0.95
+    },
     "fortran": null,
     "unit": "ms"
   },
@@ -123,7 +228,14 @@
     "operation": "multilinear",
     "name": "bind_poly_var_top",
     "size": 18,
-    "rust": 1.94,
+    "rust": {
+      "mean_ms": 1.9408,
+      "median_ms": 1.9061,
+      "std_error_ms": 0.0653,
+      "ci_lower_ms": 1.8141,
+      "ci_upper_ms": 2.0696,
+      "confidence_level": 0.95
+    },
     "fortran": null,
     "unit": "ms"
   },
@@ -131,7 +243,14 @@
     "operation": "multilinear",
     "name": "bind_poly_var_top",
     "size": 12,
-    "rust": 0.14,
+    "rust": {
+      "mean_ms": 0.1406,
+      "median_ms": 0.1413,
+      "std_error_ms": 0.0007,
+      "ci_lower_ms": 0.1391,
+      "ci_upper_ms": 0.142,
+      "confidence_level": 0.95
+    },
     "fortran": null,
     "unit": "ms"
   },
@@ -139,7 +258,14 @@
     "operation": "multilinear",
     "name": "bind_poly_var_top",
     "size": 16,
-    "rust": 0.59,
+    "rust": {
+      "mean_ms": 0.889,
+      "median_ms": 0.88,
+      "std_error_ms": 0.0055,
+      "ci_lower_ms": 0.8786,
+      "ci_upper_ms": 0.9001,
+      "confidence_level": 0.95
+    },
     "fortran": null,
     "unit": "ms"
   },
@@ -147,7 +273,14 @@
     "operation": "univariate",
     "name": "evaluate",
     "size": 1000,
-    "rust": 0.04,
+    "rust": {
+      "mean_ms": 0.0366,
+      "median_ms": 0.0364,
+      "std_error_ms": 0.0002,
+      "ci_lower_ms": 0.0363,
+      "ci_upper_ms": 0.037,
+      "confidence_level": 0.95
+    },
     "fortran": null,
     "unit": "ms"
   },
@@ -155,7 +288,14 @@
     "operation": "univariate",
     "name": "evaluate",
     "size": 10,
-    "rust": 0.0,
+    "rust": {
+      "mean_ms": 0.0004,
+      "median_ms": 0.0004,
+      "std_error_ms": 0.0,
+      "ci_lower_ms": 0.0004,
+      "ci_upper_ms": 0.0004,
+      "confidence_level": 0.95
+    },
     "fortran": null,
     "unit": "ms"
   },
@@ -163,7 +303,14 @@
     "operation": "univariate",
     "name": "evaluate",
     "size": 5000,
-    "rust": 0.18,
+    "rust": {
+      "mean_ms": 0.1845,
+      "median_ms": 0.1839,
+      "std_error_ms": 0.0019,
+      "ci_lower_ms": 0.181,
+      "ci_upper_ms": 0.1885,
+      "confidence_level": 0.95
+    },
     "fortran": null,
     "unit": "ms"
   },
@@ -171,7 +318,14 @@
     "operation": "univariate",
     "name": "evaluate",
     "size": 500,
-    "rust": 0.02,
+    "rust": {
+      "mean_ms": 0.0193,
+      "median_ms": 0.0197,
+      "std_error_ms": 0.0003,
+      "ci_lower_ms": 0.0188,
+      "ci_upper_ms": 0.0198,
+      "confidence_level": 0.95
+    },
     "fortran": null,
     "unit": "ms"
   },
@@ -179,7 +333,14 @@
     "operation": "univariate",
     "name": "evaluate",
     "size": 50,
-    "rust": 0.0,
+    "rust": {
+      "mean_ms": 0.0017,
+      "median_ms": 0.0017,
+      "std_error_ms": 0.0,
+      "ci_lower_ms": 0.0017,
+      "ci_upper_ms": 0.0018,
+      "confidence_level": 0.95
+    },
     "fortran": null,
     "unit": "ms"
   },
@@ -187,7 +348,14 @@
     "operation": "univariate",
     "name": "evaluate",
     "size": 100,
-    "rust": 0.0,
+    "rust": {
+      "mean_ms": 0.0035,
+      "median_ms": 0.0035,
+      "std_error_ms": 0.0,
+      "ci_lower_ms": 0.0035,
+      "ci_upper_ms": 0.0035,
+      "confidence_level": 0.95
+    },
     "fortran": null,
     "unit": "ms"
   },
@@ -195,7 +363,14 @@
     "operation": "univariate",
     "name": "eval_at_one",
     "size": 1000,
-    "rust": 0.05,
+    "rust": {
+      "mean_ms": 0.0507,
+      "median_ms": 0.0505,
+      "std_error_ms": 0.0013,
+      "ci_lower_ms": 0.0485,
+      "ci_upper_ms": 0.0534,
+      "confidence_level": 0.95
+    },
     "fortran": null,
     "unit": "ms"
   },
@@ -203,7 +378,14 @@
     "operation": "univariate",
     "name": "eval_at_one",
     "size": 10,
-    "rust": 0.02,
+    "rust": {
+      "mean_ms": 0.0206,
+      "median_ms": 0.0202,
+      "std_error_ms": 0.0003,
+      "ci_lower_ms": 0.0202,
+      "ci_upper_ms": 0.0212,
+      "confidence_level": 0.95
+    },
     "fortran": null,
     "unit": "ms"
   },
@@ -211,7 +393,14 @@
     "operation": "univariate",
     "name": "eval_at_one",
     "size": 5000,
-    "rust": 0.07,
+    "rust": {
+      "mean_ms": 0.0695,
+      "median_ms": 0.0704,
+      "std_error_ms": 0.0009,
+      "ci_lower_ms": 0.0676,
+      "ci_upper_ms": 0.071,
+      "confidence_level": 0.95
+    },
     "fortran": null,
     "unit": "ms"
   },
@@ -219,7 +408,14 @@
     "operation": "univariate",
     "name": "eval_at_one",
     "size": 500,
-    "rust": 0.04,
+    "rust": {
+      "mean_ms": 0.0439,
+      "median_ms": 0.0435,
+      "std_error_ms": 0.0004,
+      "ci_lower_ms": 0.0432,
+      "ci_upper_ms": 0.0448,
+      "confidence_level": 0.95
+    },
     "fortran": null,
     "unit": "ms"
   },
@@ -227,7 +423,14 @@
     "operation": "univariate",
     "name": "eval_at_one",
     "size": 50,
-    "rust": 0.03,
+    "rust": {
+      "mean_ms": 0.0255,
+      "median_ms": 0.0245,
+      "std_error_ms": 0.001,
+      "ci_lower_ms": 0.0242,
+      "ci_upper_ms": 0.0276,
+      "confidence_level": 0.95
+    },
     "fortran": null,
     "unit": "ms"
   },
@@ -235,7 +438,14 @@
     "operation": "univariate",
     "name": "eval_at_one",
     "size": 100,
-    "rust": 0.03,
+    "rust": {
+      "mean_ms": 0.028,
+      "median_ms": 0.028,
+      "std_error_ms": 0.0003,
+      "ci_lower_ms": 0.0275,
+      "ci_upper_ms": 0.0286,
+      "confidence_level": 0.95
+    },
     "fortran": null,
     "unit": "ms"
   },
@@ -243,7 +453,14 @@
     "operation": "eq_polynomial",
     "name": "evaluate",
     "size": 20,
-    "rust": 0.0,
+    "rust": {
+      "mean_ms": 0.0013,
+      "median_ms": 0.0012,
+      "std_error_ms": 0.0,
+      "ci_lower_ms": 0.0012,
+      "ci_upper_ms": 0.0013,
+      "confidence_level": 0.95
+    },
     "fortran": null,
     "unit": "ms"
   },
@@ -251,7 +468,14 @@
     "operation": "eq_polynomial",
     "name": "evaluate",
     "size": 14,
-    "rust": 0.0,
+    "rust": {
+      "mean_ms": 0.0009,
+      "median_ms": 0.0009,
+      "std_error_ms": 0.0,
+      "ci_lower_ms": 0.0009,
+      "ci_upper_ms": 0.001,
+      "confidence_level": 0.95
+    },
     "fortran": null,
     "unit": "ms"
   },
@@ -259,7 +483,14 @@
     "operation": "eq_polynomial",
     "name": "evaluate",
     "size": 10,
-    "rust": 0.0,
+    "rust": {
+      "mean_ms": 0.0006,
+      "median_ms": 0.0006,
+      "std_error_ms": 0.0,
+      "ci_lower_ms": 0.0006,
+      "ci_upper_ms": 0.0007,
+      "confidence_level": 0.95
+    },
     "fortran": null,
     "unit": "ms"
   },
@@ -267,7 +498,14 @@
     "operation": "eq_polynomial",
     "name": "evaluate",
     "size": 18,
-    "rust": 0.0,
+    "rust": {
+      "mean_ms": 0.0013,
+      "median_ms": 0.0012,
+      "std_error_ms": 0.0,
+      "ci_lower_ms": 0.0012,
+      "ci_upper_ms": 0.0013,
+      "confidence_level": 0.95
+    },
     "fortran": null,
     "unit": "ms"
   },
@@ -275,7 +513,14 @@
     "operation": "eq_polynomial",
     "name": "evaluate",
     "size": 12,
-    "rust": 0.0,
+    "rust": {
+      "mean_ms": 0.0007,
+      "median_ms": 0.0007,
+      "std_error_ms": 0.0,
+      "ci_lower_ms": 0.0007,
+      "ci_upper_ms": 0.0008,
+      "confidence_level": 0.95
+    },
     "fortran": null,
     "unit": "ms"
   },
@@ -283,7 +528,14 @@
     "operation": "eq_polynomial",
     "name": "evaluate",
     "size": 16,
-    "rust": 0.0,
+    "rust": {
+      "mean_ms": 0.001,
+      "median_ms": 0.001,
+      "std_error_ms": 0.0,
+      "ci_lower_ms": 0.001,
+      "ci_upper_ms": 0.001,
+      "confidence_level": 0.95
+    },
     "fortran": null,
     "unit": "ms"
   },
@@ -291,7 +543,14 @@
     "operation": "eq_polynomial",
     "name": "evals_from_points",
     "size": 20,
-    "rust": 30.29,
+    "rust": {
+      "mean_ms": 30.2916,
+      "median_ms": 30.0594,
+      "std_error_ms": 0.195,
+      "ci_lower_ms": 29.958,
+      "ci_upper_ms": 30.7117,
+      "confidence_level": 0.95
+    },
     "fortran": null,
     "unit": "ms"
   },
@@ -299,7 +558,14 @@
     "operation": "eq_polynomial",
     "name": "evals_from_points",
     "size": 14,
-    "rust": 0.66,
+    "rust": {
+      "mean_ms": 0.656,
+      "median_ms": 0.6555,
+      "std_error_ms": 0.01,
+      "ci_lower_ms": 0.6373,
+      "ci_upper_ms": 0.6765,
+      "confidence_level": 0.95
+    },
     "fortran": null,
     "unit": "ms"
   },
@@ -307,7 +573,14 @@
     "operation": "eq_polynomial",
     "name": "evals_from_points",
     "size": 10,
-    "rust": 0.24,
+    "rust": {
+      "mean_ms": 0.2415,
+      "median_ms": 0.2396,
+      "std_error_ms": 0.0027,
+      "ci_lower_ms": 0.2364,
+      "ci_upper_ms": 0.2467,
+      "confidence_level": 0.95
+    },
     "fortran": null,
     "unit": "ms"
   },
@@ -315,7 +588,14 @@
     "operation": "eq_polynomial",
     "name": "evals_from_points",
     "size": 18,
-    "rust": 3.46,
+    "rust": {
+      "mean_ms": 3.4606,
+      "median_ms": 3.5532,
+      "std_error_ms": 0.1405,
+      "ci_lower_ms": 3.1852,
+      "ci_upper_ms": 3.7313,
+      "confidence_level": 0.95
+    },
     "fortran": null,
     "unit": "ms"
   },
@@ -323,7 +603,14 @@
     "operation": "eq_polynomial",
     "name": "evals_from_points",
     "size": 12,
-    "rust": 0.39,
+    "rust": {
+      "mean_ms": 0.3865,
+      "median_ms": 0.3832,
+      "std_error_ms": 0.0036,
+      "ci_lower_ms": 0.3805,
+      "ci_upper_ms": 0.3942,
+      "confidence_level": 0.95
+    },
     "fortran": null,
     "unit": "ms"
   },
@@ -331,7 +618,14 @@
     "operation": "eq_polynomial",
     "name": "evals_from_points",
     "size": 16,
-    "rust": 1.16,
+    "rust": {
+      "mean_ms": 1.1583,
+      "median_ms": 1.1381,
+      "std_error_ms": 0.0202,
+      "ci_lower_ms": 1.1203,
+      "ci_upper_ms": 1.1992,
+      "confidence_level": 0.95
+    },
     "fortran": null,
     "unit": "ms"
   }
