@@ -52,7 +52,9 @@ pub fn scalar_to_bytes<F: PrimeField>(scalar: &F) -> [u8; SCALAR_BYTES] {
 
 /// Convert byte array to Scalar
 pub fn bytes_to_scalar<F: PrimeField>(bytes: &[u8; SCALAR_BYTES]) -> Result<F, FortranError> {
-    F::from_repr(bytes.into())
+    let mut repr = F::Repr::default();
+    repr.as_mut().copy_from_slice(bytes);
+    F::from_repr(repr)
         .into_option()
         .ok_or(FortranError::FortranError)
 }
@@ -61,7 +63,10 @@ pub fn bytes_to_scalar<F: PrimeField>(bytes: &[u8; SCALAR_BYTES]) -> Result<F, F
 pub fn scalars_to_bytes<F: PrimeField>(scalars: &[F]) -> Vec<u8> {
     scalars
         .iter()
-        .flat_map(|s| scalar_to_bytes(s).iter().copied())
+        .flat_map(|s| {
+            let bytes = scalar_to_bytes(s);
+            bytes.iter().copied().collect::<Vec<_>>()
+        })
         .collect()
 }
 
@@ -87,7 +92,6 @@ pub fn bytes_to_scalars<F: PrimeField>(bytes: &[u8]) -> Result<Vec<F>, FortranEr
 /// FFI bindings to Fortran library
 #[cfg(feature = "fortran")]
 mod ffi {
-    use super::*;
 
     #[link(name = "polynomial_ops")]
     extern "C" {
@@ -114,7 +118,7 @@ mod ffi {
 pub fn evals_from_points_fortran<F: PrimeField>(
     r: &[F],
 ) -> Result<Vec<F>, FortranError> {
-    use super::ffi;
+    use crate::fortran::ffi;
     
     let r_len = r.len();
     let evals_len = 1usize << r_len; // 2^r_len
@@ -126,7 +130,7 @@ pub fn evals_from_points_fortran<F: PrimeField>(
     let mut evals_bytes = vec![0u8; evals_len * SCALAR_BYTES];
     
     // Call Fortran function
-    let status = unsafe {
+    let status: i32 = unsafe {
         ffi::evals_from_points_fortran(
             r_bytes.as_ptr(),
             r_len as i32,
@@ -135,7 +139,7 @@ pub fn evals_from_points_fortran<F: PrimeField>(
         )
     };
     
-    if status != 0 {
+    if status != 0i32 {
         return Err(match status {
             1 => FortranError::SizeMismatch,
             _ => FortranError::FortranError,
@@ -157,6 +161,7 @@ pub fn evals_from_points_fortran_fallback<F: PrimeField>(
 mod tests {
     use super::*;
     use crate::provider::bn256_grumpkin::bn256;
+    use ff::Field;
 
     #[test]
     fn test_scalar_conversion() {
@@ -178,3 +183,8 @@ mod tests {
         assert_eq!(scalars, restored);
     }
 }
+
+#[cfg(feature = "fortran")]
+#[cfg(test)]
+mod integration_test;
+

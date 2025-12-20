@@ -10,12 +10,13 @@ SRC_DIR = ../src
 BUILD_DIR = .
 LIB_NAME = libpolynomial_ops.so
 
-# Source files
-SOURCES = $(SRC_DIR)/eq_polynomial.f90 \
+SOURCES = $(SRC_DIR)/field_ops.f90 \
+          $(SRC_DIR)/eq_polynomial.f90 \
           $(SRC_DIR)/ffi_interface.f90
 
 # Object files
-OBJECTS = eq_polynomial.o \
+OBJECTS = field_ops.o \
+          eq_polynomial.o \
           ffi_interface.o
 
 # Default target
@@ -26,7 +27,13 @@ $(LIB_NAME): $(OBJECTS)
 	$(FC) $(LDFLAGS) -o $(LIB_NAME) $(OBJECTS)
 
 # Compile source files
-%.o: $(SRC_DIR)/%.f90
+field_ops.o: $(SRC_DIR)/field_ops.f90
+	$(FC) $(FFLAGS) -c -o $@ $<
+
+eq_polynomial.o: $(SRC_DIR)/eq_polynomial.f90 field_ops.o
+	$(FC) $(FFLAGS) -c -o $@ $<
+
+ffi_interface.o: $(SRC_DIR)/ffi_interface.f90 field_ops.o
 	$(FC) $(FFLAGS) -c -o $@ $<
 
 # Clean build artifacts
