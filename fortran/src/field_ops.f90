@@ -1,43 +1,13 @@
 !Field arithmetic for 256-bit prime fields (Bn256)
+!Basic operations and conversions (Montgomery operations are in field_ops_mont)
 !Scalar is 256 bits = 32 bytes equal to 4 x 64-bit limbs
-!Operations: add sub mul (all mod p)
-
-!p = 21888242871839275222246405745257275088548364400416034343698204186575808495617
 
 module field_ops
   use iso_c_binding
+  use montgomery  ! For field_element type and modulus
   implicit none
 
-  ! number of 64-bit limbs for 256-bit field element
-  integer, parameter :: NLIMBS = 4
   integer, parameter :: SCALAR_BYTES = 32
-
-  ! bn256 scalar field modules
-  ! libms cutting for 4 pieces (little-endian, least significant first)
-  integer(c_int64_t), parameter :: BN256_MODULUS(NLIMBS) = [ &
-    int(Z'43e1f593f0000001', c_int64_t), &
-    int(Z'2833e84879b97091', c_int64_t), &
-    int(Z'b85045b68181585d', c_int64_t), &
-    int(Z'30644e72e131a029', c_int64_t)  &
-  ]
-  
-  ! Montgomery reduction constants
-  ! p_prime = -p^-1 mod 2^64 (for Montgomery reduction)
-  integer(c_int64_t), parameter :: BN256_P_PRIME = int(Z'c2e1f593efffffff', c_int64_t)
-  
-  ! R^2 mod p (for converting to Montgomery form)
-  ! R = 2^256, R^2 mod p precomputed
-  integer(c_int64_t), parameter :: BN256_R_SQUARED_MOD_P(NLIMBS) = [ &
-    int(Z'1bb8e645ae216da7', c_int64_t), &
-    int(Z'53fe3ab1e35c59e3', c_int64_t), &
-    int(Z'8c49833d53bb8085', c_int64_t), &
-    int(Z'0216d0b17f4e44a5', c_int64_t)  &
-  ]
-
-  ! Field element type 4 x 64 bit limbs (higher)
-  type :: field_element
-    integer(c_int64_t) :: limbs(NLIMBS)
-  end type
 
 contains
 
@@ -115,15 +85,12 @@ contains
     end do
   end function field_compare
 
-  ! Compare with modulus
-  function field_gte_modulus(a) result(gte)
+  ! Compare with modulus (wrapper for montgomery module function)
+  function field_gte_modulus_wrapper(a) result(gte)
     type(field_element), intent(in) :: a
     logical :: gte
-    type(field_element) :: mod_elem
-
-    mod_elem%limbs = BN256_MODULUS
-    gte = field_compare(a, mod_elem) >= 0
-  end function field_gte_modulus
+    gte = field_gte_modulus(a)  ! Use from montgomery module
+  end function field_gte_modulus_wrapper
 
   ! Add without reduction (may overflow)
   subroutine field_add_no_reduce(a, b, c)
@@ -175,7 +142,7 @@ contains
     call field_add_no_reduce(a, b, c)
     
     ! If result >= modulus, subtract modulus
-    if (field_gte_modulus(c)) then
+    if (field_gte_modulus_wrapper(c)) then
       call field_sub_no_borrow(c, mod_elem, tmp)
       c = tmp
     end if
@@ -197,175 +164,5 @@ contains
       call field_sub_no_borrow(mod_elem, tmp, c)
     end if
   end subroutine field_sub
-
-  ! Montgomery reduction: reduces 512-bit product to 256-bit result
-  ! Input: product (8 limbs, 512 bits)
-  ! Output: result = product * R^-1 mod p (4 limbs, 256 bits)
-  ! Algorithm: classic Montgomery reduction with R = 2^256
-  subroutine montgomery_reduce(product, result)
-    integer(c_int64_t), intent(in) :: product(2 * NLIMBS)
-    type(field_element), intent(out) :: result
-    integer(c_int64_t) :: t(2 * NLIMBS)
-    integer(c_int64_t) :: u, carry, lo, hi, sum_val
-    integer :: i, j
-    
-    ! Copy product to working variable
-    t = product
-    
-    ! Montgomery reduction loop: for each limb i = 0 to NLIMBS-1
-    do i = 1, NLIMBS
-      ! u = t[i] * p_prime mod 2^64
-      u = t(i) * BN256_P_PRIME
-      
-      ! Add u * p to t, starting at position i
-      carry = 0_c_int64_t
-      do j = 1, NLIMBS
-        call mul64(u, BN256_MODULUS(j), lo, hi)
-        
-        ! Add to t[i+j-1] with carry
-        sum_val = t(i + j - 1) + lo + carry
-        if (sum_val < t(i + j - 1) .or. (carry > 0 .and. sum_val <= t(i + j - 1))) then
-          carry = hi + 1_c_int64_t
-        else
-          carry = hi
-        end if
-        t(i + j - 1) = sum_val
-      end do
-      
-      ! Propagate carry to next limb
-      if (i + NLIMBS <= 2 * NLIMBS) then
-        t(i + NLIMBS) = t(i + NLIMBS) + carry
-      end if
-    end do
-    
-    ! Result is in upper NLIMBS limbs, copy to result
-    result%limbs = t(NLIMBS + 1 : 2 * NLIMBS)
-    
-    ! Final reduction: if result >= p, subtract p
-    if (field_gte_modulus(result)) then
-      block
-        type(field_element) :: mod_elem, tmp_result
-        mod_elem%limbs = BN256_MODULUS
-        tmp_result%limbs = result%limbs
-        call field_sub_no_borrow(tmp_result, mod_elem, result)
-      end block
-    end if
-  end subroutine montgomery_reduce
-  
-  ! Convert normal form to Montgomery form: a_mont = a * R mod p
-  ! Uses precomputed R^2 mod p: a * R = (a * R^2) / R mod p
-  subroutine to_montgomery(a_normal, a_mont)
-    type(field_element), intent(in) :: a_normal
-    type(field_element), intent(out) :: a_mont
-    integer(c_int64_t) :: product(2 * NLIMBS)
-    integer(c_int64_t) :: carry, lo, hi
-    integer :: i, j, k
-    
-    ! Multiply a_normal * R^2 to get 512-bit product
-    product = 0_c_int64_t
-    
-    do i = 1, NLIMBS
-      carry = 0_c_int64_t
-      do j = 1, NLIMBS
-        k = i + j - 1
-        call mul64(a_normal%limbs(i), BN256_R_SQUARED_MOD_P(j), lo, hi)
-        product(k) = product(k) + lo + carry
-        if (product(k) < lo .or. (carry > 0 .and. product(k) <= lo)) then
-          carry = hi + 1_c_int64_t
-        else
-          carry = hi
-        end if
-      end do
-      if (k + 1 <= 2 * NLIMBS) then
-        product(k + 1) = product(k + 1) + carry
-      end if
-    end do
-    
-    ! Montgomery reduce to get a * R mod p
-    call montgomery_reduce(product, a_mont)
-  end subroutine to_montgomery
-  
-  ! Convert Montgomery form to normal form: a_normal = a_mont * R^-1 mod p
-  ! Represent a_mont as 512-bit number (a_mont, 0) = a_mont * R
-  ! Montgomery reduction gives (a_mont * R) * R^-1 = a_mont mod p (normal form)
-  subroutine from_montgomery(a_mont, a_normal)
-    type(field_element), intent(in) :: a_mont
-    type(field_element), intent(out) :: a_normal
-    integer(c_int64_t) :: product(2 * NLIMBS)
-    
-    ! Represent a_mont as upper half of 512-bit number
-    ! This represents a_mont * R (since R = 2^256)
-    product(1:NLIMBS) = 0_c_int64_t
-    product(NLIMBS + 1:2 * NLIMBS) = a_mont%limbs
-    
-    ! Montgomery reduce: result = (a_mont * R) * R^-1 = a_mont mod p (normal form)
-    call montgomery_reduce(product, a_normal)
-  end subroutine from_montgomery
-
-  ! Multiply mod p: c = (a * b) mod p using Montgomery reduction
-  ! Strategy: convert inputs to Montgomery form, multiply, convert result back
-  subroutine field_mul(a, b, c)
-    type(field_element), intent(in) :: a, b
-    type(field_element), intent(out) :: c
-    type(field_element) :: a_mont, b_mont, c_mont
-    integer(c_int64_t) :: product(2 * NLIMBS)
-    integer(c_int64_t) :: carry, lo, hi
-    integer :: i, j, k
-
-    ! Convert inputs to Montgomery form
-    call to_montgomery(a, a_mont)
-    call to_montgomery(b, b_mont)
-    
-    product = 0_c_int64_t
-    
-    ! Schoolbook multiplication
-    do i = 1, NLIMBS
-      carry = 0_c_int64_t
-      do j = 1, NLIMBS
-        k = i + j - 1
-        call mul64(a_mont%limbs(i), b_mont%limbs(j), lo, hi)
-        product(k) = product(k) + lo + carry
-        if (product(k) < lo .or. (carry > 0 .and. product(k) <= lo)) then
-          carry = hi + 1_c_int64_t
-        else
-          carry = hi
-        end if
-      end do
-      if (k + 1 <= 2 * NLIMBS) then
-        product(k + 1) = product(k + 1) + carry
-      end if
-    end do
-    
-    ! Montgomery reduce: c_mont = (a_mont * b_mont) * R^-1 mod p
-    call montgomery_reduce(product, c_mont)
-    
-    call from_montgomery(c_mont, c)
-  end subroutine field_mul
-
-  ! Helper: multiply two 64-bit integers, return 128-bit result as (lo, hi)
-  subroutine mul64(a, b, lo, hi)
-    integer(c_int64_t), intent(in) :: a, b
-    integer(c_int64_t), intent(out) :: lo, hi
-    integer(c_int64_t) :: a_lo, a_hi, b_lo, b_hi
-    integer(c_int64_t) :: p0, p1, p2, p3, carry
-    
-    ! Split into 32-bit halves
-    a_lo = iand(a, int(Z'FFFFFFFF', c_int64_t))
-    a_hi = ishft(a, -32)
-    b_lo = iand(b, int(Z'FFFFFFFF', c_int64_t))
-    b_hi = ishft(b, -32)
-    
-    ! Multiply parts
-    p0 = a_lo * b_lo
-    p1 = a_lo * b_hi
-    p2 = a_hi * b_lo
-    p3 = a_hi * b_hi
-    
-    ! Combine
-    carry = ishft(p0, -32) + iand(p1, int(Z'FFFFFFFF', c_int64_t)) + &
-            iand(p2, int(Z'FFFFFFFF', c_int64_t))
-    lo = iand(p0, int(Z'FFFFFFFF', c_int64_t)) + ishft(iand(carry, int(Z'FFFFFFFF', c_int64_t)), 32)
-    hi = p3 + ishft(p1, -32) + ishft(p2, -32) + ishft(carry, -32)
-  end subroutine mul64
 
 end module field_ops
