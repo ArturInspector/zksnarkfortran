@@ -71,7 +71,12 @@ harness = false
 name = "sumcheckeq"
 harness = false
 
+[[bench]]
+name = "fortran_evals"
+harness = false
+
 [features]
 default = ["halo2curves/asm"]
 flamegraph = ["pprof2/flamegraph", "pprof2/criterion"]
 experimental = []
+fortran = []  # Enable Fortran acceleration (requires libpolynomial_ops.so)

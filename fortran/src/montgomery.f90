@@ -58,15 +58,12 @@ contains
     integer(c_int64_t), intent(in) :: a, b
     integer(c_int64_t), intent(out) :: lo, hi
     
-    ! Try to use compiler intrinsic if available
-    ! For GCC/Clang: __int128_t can be used via C interop
-    ! For now, use optimized Karatsuba-like approach
-    
+    ! karatsuba-like approach
     integer(c_int64_t) :: a_lo, a_hi, b_lo, b_hi
     integer(c_int64_t) :: p0, p1, p2, p3
     integer(c_int64_t) :: carry, t1, t2
     
-    ! Split into 32-bit halves
+    !Split into 32s
     a_lo = iand(a, int(Z'FFFFFFFF', c_int64_t))
     a_hi = ishft(a, -32)
     b_lo = iand(b, int(Z'FFFFFFFF', c_int64_t))
@@ -78,8 +75,8 @@ contains
     p2 = a_hi * b_lo
     p3 = a_hi * b_hi
     
-    ! Combine with optimized carry handling
-    carry = ishft(p0, -32)
+
+    carry = ishft(p0, -32)     ! carry handling optimized
     t1 = iand(p1, int(Z'FFFFFFFF', c_int64_t))
     t2 = iand(p2, int(Z'FFFFFFFF', c_int64_t))
     carry = carry + t1 + t2

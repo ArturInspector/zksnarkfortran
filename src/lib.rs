@@ -8,7 +8,7 @@
   missing_docs
 )]
 #![allow(non_snake_case)]
-#![forbid(unsafe_code)]
+#![cfg_attr(not(feature = "fortran"), forbid(unsafe_code))]
 
 // main APIs exposed by this library
 pub mod nova;
@@ -28,6 +28,9 @@ pub mod traits;
 mod constants;
 mod digest;
 mod r1cs;
+
+#[cfg(feature = "fortran")]
+pub mod fortran;
 
 use traits::{commitment::CommitmentEngineTrait, Engine};
 

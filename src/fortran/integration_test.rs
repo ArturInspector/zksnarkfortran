@@ -96,4 +96,56 @@ mod tests {
         assert_eq!(rust_result, fortran_result);
         println!("✓ Zero test passed");
     }
+
+    #[test]
+    fn test_montgomery_conversion() {
+        // Test that Montgomery conversions are correct
+        type F = bn256::Scalar;
+        
+        let test_values = vec![F::ZERO, F::ONE, F::from(2u64), F::from(42u64)];
+        
+        for val in test_values {
+            let bytes = crate::fortran::scalar_to_bytes(&val);
+            // Convert to scalar and back to verify byte conversion works
+            let restored = crate::fortran::bytes_to_scalar(&bytes).unwrap();
+            assert_eq!(val, restored, "Byte conversion failed for {:?}", val);
+        }
+    }
+
+    #[test] 
+    fn test_evals_from_points_debug() {
+        // Add detailed debugging output
+        type F = bn256::Scalar;
+        
+        let r = vec![F::ONE];
+        let rust_result = EqPolynomial::evals_from_points(&r);
+        let fortran_result = evals_from_points_fortran(&r);
+        
+        match fortran_result {
+            Ok(fortran_evals) => {
+                eprintln!("Input r: {:?}", r);
+                eprintln!("Rust result length: {}", rust_result.len());
+                eprintln!("Fortran result length: {}", fortran_evals.len());
+                
+                for (i, (rust_val, fortran_val)) in rust_result.iter()
+                    .zip(fortran_evals.iter()).enumerate() {
+                    if rust_val != fortran_val {
+                        eprintln!("Index {} mismatch:", i);
+                        eprintln!("  Rust:   {:?}", rust_val);
+                        eprintln!("  Fortran: {:?}", fortran_val);
+                        // Print byte representation
+                        let rust_bytes = rust_val.to_repr();
+                        let fortran_bytes = fortran_val.to_repr();
+                        eprintln!("  Rust bytes (LE):   {:02x?}", rust_bytes.as_ref());
+                        eprintln!("  Fortran bytes (LE): {:02x?}", fortran_bytes.as_ref());
+                    }
+                }
+                
+                assert_eq!(rust_result, fortran_evals);
+            }
+            Err(e) => {
+                panic!("Fortran failed: {:?}", e);
+            }
+        }
+    }
 }
