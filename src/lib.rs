@@ -8,7 +8,8 @@
   missing_docs
 )]
 #![allow(non_snake_case)]
-#![forbid(unsafe_code)]
+// Changed from forbid to deny: allows #[allow(unsafe_code)] in fortran FFI module only
+#![deny(unsafe_code)]
 
 // main APIs exposed by this library
 pub mod nova;
@@ -23,6 +24,12 @@ pub mod gadgets;
 pub mod provider;
 pub mod spartan;
 pub mod traits;
+
+// Fortran FFI acceleration (research experiment).
+// unsafe needed for FFI calls to Fortran shared library.
+#[cfg(feature = "fortran")]
+#[allow(unsafe_code)]
+pub mod fortran;
 
 // private modules
 mod constants;

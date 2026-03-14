@@ -2,8 +2,12 @@
 
 # Compiler settings
 FC = gfortran
-FFLAGS = -O3 -fPIC -std=f2003 -Wall
-LDFLAGS = -shared
+# -std=f2018: required for DO CONCURRENT with local variables
+# -march=native: enables AVX2/AVX-512 where available (critical for SIMD on int loops)
+# -fopenmp: enables DO CONCURRENT parallel execution (gfortran maps it to OpenMP runtime)
+# -ftree-vectorize: aggressive auto-vectorization of inner loops
+FFLAGS = -O3 -fPIC -std=f2018 -march=native -fopenmp -ftree-vectorize -Wall
+LDFLAGS = -shared -fopenmp
 
 # Directories
 SRC_DIR = ../src
@@ -40,4 +44,12 @@ ffi_interface.o: $(SRC_DIR)/ffi_interface.f90 field_ops.o
 clean:
 	rm -f $(OBJECTS) $(LIB_NAME)
 
-.PHONY: all clean
+# Quick benchmark: compare sequential vs DO CONCURRENT
+# Usage: make bench N=20  (N = number of variables, output size = 2^N)
+bench: $(LIB_NAME)
+	@echo "=== Fortran evals_from_points benchmark (n=$(or $(N),20)) ==="
+	@echo "Running with DO CONCURRENT (gfortran maps to OpenMP threads)"
+	@OMP_NUM_THREADS=1 time -f "1 thread:  %e sec" ./bench_runner $(or $(N),20) 2>&1 || true
+	@OMP_NUM_THREADS=4 time -f "4 threads: %e sec" ./bench_runner $(or $(N),20) 2>&1 || true
+
+.PHONY: all clean bench

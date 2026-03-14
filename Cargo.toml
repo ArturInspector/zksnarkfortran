@@ -71,7 +71,14 @@ harness = false
 name = "sumcheckeq"
 harness = false
 
+[[bench]]
+name = "evals_fortran_vs_rust"
+harness = false
+required-features = []
+
 [features]
 default = ["halo2curves/asm"]
 flamegraph = ["pprof2/flamegraph", "pprof2/criterion"]
 experimental = []
+# Fortran FFI for evals_from_points (research experiment)
+fortran = []
