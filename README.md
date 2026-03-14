@@ -10,8 +10,8 @@ This is a **research experiment** — a fork of [Microsoft/Nova](https://github.
 ## The Hypothesis
 
 zkSNARK provers are essentially scientific computing problems:
-- Massive polynomial evaluations over prime fields
-- Embarrassingly parallel inner loops (butterfly patterns)
+Massive polynomial evaluations over prime fields
+Embarrassingly parallel inner loops (butterfly patterns)
 - Memory-bound workloads that benefit from cache-aware access
 
 Fortran has 60 years of compiler optimizations for exactly this shape of computation. The HPC world uses it on supercomputers. The Web3 world has never touched it.
@@ -67,24 +67,39 @@ Safety proof: indices `j` and `size+j` never alias across iterations when `j ∈
 
 ---
 
-## Expected Benchmark Results
+## Benchmark Results (Measured)
 
-> *Honest predictions before measuring. Science requires falsifiable hypotheses.*
+> *Real numbers. n = number of variables, output size = 2^n field elements.*
 
-| Scenario | Expected | Why |
-|----------|----------|-----|
-| Fortran sequential vs Rust sequential | **Rust faster** (~2-5×) | Rust/ark-ff uses `u128` / `mulx` instruction; Fortran's `mul64` does 4 muls instead of 1 |
-| Fortran `DO CONCURRENT` (4 threads) vs Rust single-thread | **Competitive or faster** | Outer butterfly steps expose enough parallelism at `n ≥ 16` |
-| Fortran `DO CONCURRENT` vs Rust `rayon` | **Unknown** | This is the actual experiment |
-| Montgomery pre-conversion alone | **~25% speedup** | Saves `1/3` of Montgomery ops in butterfly |
+| Implementation | n=16 | n=20 | vs Rust |
+|---|---|---|---|
+| **Rust** (ark-ff, single thread) | ~0.4 ms | **40 ms** | baseline |
+| **Fortran sequential** | 30 ms | 505 ms | ~12× slower |
+| **Fortran DO CONCURRENT** (4 threads) | 32 ms | 466 ms | ~11× slower |
+| **Fortran via FFI** (from Rust) | — | 800 ms | ~20× slower |
 
-**Where Fortran genuinely wins nothing:**
-- `mul64`: Fortran can't access `mulx`/`adcx` without inline asm. Structural loss.
-- Single-threaded field arithmetic: ark-ff with `asm` feature is 2-5× faster.
+### What the numbers say
 
-**Where Fortran might surprise:**
-- `DO CONCURRENT` with `-fopenmp -march=native` on multi-core without Rust threading boilerplate
-- Cache behavior on large `n` (≥20): column-major Fortran arrays + sequential butterfly = friendly prefetch patterns
+**1. `mul64` is the root cause (~12× gap).**
+Rust's `ark-ff` uses a single `mulx` x86 instruction for 64×64→128-bit multiply.
+Fortran's `mul64` splits into four 32-bit multiplications. This is a structural loss —
+no compiler flag fixes it without inline assembly.
+
+**2. `DO CONCURRENT` didn't help.**
+At n=20, gain is ~40ms (10%). The inner loop body (`field_mul_mont_b`) completes in
+nanoseconds — too fine-grained for thread scheduling overhead to be worth it.
+Would matter for n≥24 or coarser-grained parallel work.
+
+**3. FFI byte serialization adds 58% overhead.**
+2^20 elements × 32 bytes = 32 MB serialized and deserialized per call.
+The FFI boundary as designed (byte buffers) cannot be a viable acceleration path.
+
+### What a viable path looks like
+
+For Fortran to matter in a zk context, data must **live in Fortran memory from the start**
+— not passed as byte buffers across FFI. This means:
+- Fortran-owned proof state, called from a thin Rust orchestration layer
+- Or: Fortran for distributed NTT on HPC clusters where Rust isn't the host language
 
 ---
 
