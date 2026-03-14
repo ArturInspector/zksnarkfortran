@@ -54,7 +54,7 @@ contains
   end subroutine field_one
 
     ! Copy field element
-  subroutine field_copy(dst, src)
+  pure subroutine field_copy(dst, src)
     type(field_element), intent(out) :: dst
     type(field_element), intent(in) :: src
     dst%limbs = src%limbs
@@ -98,7 +98,7 @@ contains
   end subroutine field_to_bytes
 
   ! Compare: returns -1 if a < b, 0 if a == b, 1 if a > b
-  function field_compare(a, b) result(cmp)
+  pure function field_compare(a, b) result(cmp)
     type(field_element), intent(in) :: a, b
     integer :: cmp
     integer :: i
@@ -116,7 +116,7 @@ contains
   end function field_compare
 
   ! Compare with modulus
-  function field_gte_modulus(a) result(gte)
+  pure function field_gte_modulus(a) result(gte)
     type(field_element), intent(in) :: a
     logical :: gte
     type(field_element) :: mod_elem
@@ -147,7 +147,7 @@ contains
   end subroutine field_add_no_reduce
 
   ! Subtract: c = a - b (assumes a >= b)
-  subroutine field_sub_no_borrow(a, b, c)
+  pure subroutine field_sub_no_borrow(a, b, c)
     type(field_element), intent(in) :: a, b
     type(field_element), intent(out) :: c
     integer :: i
@@ -182,7 +182,7 @@ contains
   end subroutine field_add
 
   ! Subtract mod p: c = (a - b) mod p
-  subroutine field_sub(a, b, c)
+  pure subroutine field_sub(a, b, c)
     type(field_element), intent(in) :: a, b
     type(field_element), intent(out) :: c
     type(field_element) :: mod_elem, tmp
@@ -202,7 +202,7 @@ contains
   ! Input: product (8 limbs, 512 bits)
   ! Output: result = product * R^-1 mod p (4 limbs, 256 bits)
   ! Algorithm: classic Montgomery reduction with R = 2^256
-  subroutine montgomery_reduce(product, result)
+  pure subroutine montgomery_reduce(product, result)
     integer(c_int64_t), intent(in) :: product(2 * NLIMBS)
     type(field_element), intent(out) :: result
     integer(c_int64_t) :: t(2 * NLIMBS)
@@ -254,7 +254,7 @@ contains
   
   ! Convert normal form to Montgomery form: a_mont = a * R mod p
   ! Uses precomputed R^2 mod p: a * R = (a * R^2) / R mod p
-  subroutine to_montgomery(a_normal, a_mont)
+  pure subroutine to_montgomery(a_normal, a_mont)
     type(field_element), intent(in) :: a_normal
     type(field_element), intent(out) :: a_mont
     integer(c_int64_t) :: product(2 * NLIMBS)
@@ -288,7 +288,7 @@ contains
   ! Convert Montgomery form to normal form: a_normal = a_mont * R^-1 mod p
   ! Represent a_mont as 512-bit number (a_mont, 0) = a_mont * R
   ! Montgomery reduction gives (a_mont * R) * R^-1 = a_mont mod p (normal form)
-  subroutine from_montgomery(a_mont, a_normal)
+  pure subroutine from_montgomery(a_mont, a_normal)
     type(field_element), intent(in) :: a_mont
     type(field_element), intent(out) :: a_normal
     integer(c_int64_t) :: product(2 * NLIMBS)
@@ -301,6 +301,41 @@ contains
     ! Montgomery reduce: result = (a_mont * R) * R^-1 = a_mont mod p (normal form)
     call montgomery_reduce(product, a_normal)
   end subroutine from_montgomery
+
+  ! Multiply mod p when b is already in Montgomery form
+  ! Saves one to_montgomery call — use when b is pre-converted (e.g. loop invariants)
+  ! c = (a * b_mont) mod p
+  pure subroutine field_mul_mont_b(a, b_mont, c)
+    type(field_element), intent(in) :: a, b_mont
+    type(field_element), intent(out) :: c
+    type(field_element) :: a_mont, c_mont
+    integer(c_int64_t) :: product(2 * NLIMBS)
+    integer(c_int64_t) :: carry, lo, hi
+    integer :: i, j, k
+
+    call to_montgomery(a, a_mont)
+
+    product = 0_c_int64_t
+    do i = 1, NLIMBS
+      carry = 0_c_int64_t
+      do j = 1, NLIMBS
+        k = i + j - 1
+        call mul64(a_mont%limbs(i), b_mont%limbs(j), lo, hi)
+        product(k) = product(k) + lo + carry
+        if (product(k) < lo .or. (carry > 0 .and. product(k) <= lo)) then
+          carry = hi + 1_c_int64_t
+        else
+          carry = hi
+        end if
+      end do
+      if (k + 1 <= 2 * NLIMBS) then
+        product(k + 1) = product(k + 1) + carry
+      end if
+    end do
+
+    call montgomery_reduce(product, c_mont)
+    call from_montgomery(c_mont, c)
+  end subroutine field_mul_mont_b
 
   ! Multiply mod p: c = (a * b) mod p using Montgomery reduction
   ! Strategy: convert inputs to Montgomery form, multiply, convert result back
@@ -343,7 +378,7 @@ contains
   end subroutine field_mul
 
   ! Helper: multiply two 64-bit integers, return 128-bit result as (lo, hi)
-  subroutine mul64(a, b, lo, hi)
+  pure subroutine mul64(a, b, lo, hi)
     integer(c_int64_t), intent(in) :: a, b
     integer(c_int64_t), intent(out) :: lo, hi
     integer(c_int64_t) :: a_lo, a_hi, b_lo, b_hi

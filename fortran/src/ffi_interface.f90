@@ -25,8 +25,9 @@ contains
     
     ! Local variables
     type(field_element), allocatable :: r(:)
+    type(field_element), allocatable :: r_mont(:)   ! r pre-converted to Montgomery form
     type(field_element), allocatable :: evals(:)
-    type(field_element) :: temp
+    type(field_element), allocatable :: temp_arr(:) ! per-index temp (DO CONCURRENT safety)
     integer :: i, j, ell, size
     
     ! Validate input
@@ -42,11 +43,16 @@ contains
     ! Allocate field element arrays
     ell = r_len
     allocate(r(ell))
+    allocate(r_mont(ell))
     allocate(evals(evals_len))
+    allocate(temp_arr(evals_len))
     
-    ! Convert input bytes to field elements
+    ! Convert input bytes to field elements, pre-convert r to Montgomery form.
+    ! r_mont(i) = r(i) * R mod p — paid once, saves one to_montgomery per butterfly step.
+    ! Total saved: sum(size_i) = 2^n - 1 Montgomery multiplications.
     do i = 1, ell
       call bytes_to_field(r_bytes((i-1)*SCALAR_BYTES + 1 : i*SCALAR_BYTES), r(i))
+      call to_montgomery(r(i), r_mont(i))
     end do
 
     ! Initialize: evals[1] = ONE, rest = ZERO
@@ -55,22 +61,21 @@ contains
       call field_zero(evals(i))
     end do
 
-    ! Main algorithm: recursive doubling
-    ! For each r_i (in reverse order):
-    !   For each j in 0..size-1:
-    !     evals[size + j] = evals[j] * r_i
-    !     evals[j] = evals[j] - evals[size + j]
-    !   size = size * 2
+    ! Main algorithm: recursive doubling (butterfly pattern, similar to NTT).
+    !
+    ! DO CONCURRENT: inner j-loop is embarrassingly parallel —
+    ! each j reads evals(j) and writes evals(j), evals(size+j).
+    ! Indices j and size+j never overlap across iterations (j <= size < size+j).
+    !
+    ! field_mul_mont_b: uses pre-converted r_mont(i), saves one Montgomery
+    ! multiplication per call vs field_mul. Outer loop is sequential (data dep).
     
     size = 1
     do i = ell, 1, -1
-      do j = 1, size
-        ! temp = evals[j] * r[i]
-        call field_mul(evals(j), r(i), temp)
-        ! evals[size + j] = temp
-        call field_copy(evals(size + j), temp)
-        ! evals[j] = evals[j] - temp
-        call field_sub(evals(j), temp, evals(j))
+      do concurrent (j = 1:size)
+        call field_mul_mont_b(evals(j), r_mont(i), temp_arr(j))
+        call field_copy(evals(size + j), temp_arr(j))
+        call field_sub(evals(j), temp_arr(j), evals(j))
       end do
       size = size * 2
     end do
@@ -82,7 +87,9 @@ contains
 
     ! Cleanup
     deallocate(r)
+    deallocate(r_mont)
     deallocate(evals)
+    deallocate(temp_arr)
 
     status = 0  ! Success!
   end function evals_from_points_fortran
